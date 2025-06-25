@@ -35,6 +35,7 @@ const Contact: FC = () => {
 
       setSubmitted(true);
       setFormData({ name: '', email: '', message: '' });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError(
         'Hubo un error al enviar tu mensaje. Por favor, intenta de nuevo.'
