@@ -6,6 +6,7 @@ import { IconCheck, IconLoader2 } from '@tabler/icons-react';
 const Contact: FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,18 +16,32 @@ const Contact: FC = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
-    // Simulación de envío
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-    setIsLoading(false);
-    setSubmitted(true);
+      const data = await response.json();
 
-    // Resetear después de 5 segundos
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', email: '', message: '' }); // Limpiar formulario
-    }, 5000);
+      if (!data.success) {
+        throw new Error('Error al enviar el mensaje');
+      }
+
+      setSubmitted(true);
+      setFormData({ name: '', email: '', message: '' });
+    } catch (err) {
+      setError(
+        'Hubo un error al enviar tu mensaje. Por favor, intenta de nuevo.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (
@@ -68,7 +83,8 @@ const Contact: FC = () => {
                 <IconCheck className="h-8 w-8 text-green-500" />
               </div>
               <h3
-                className="text-2xl font-bold mb-2 text-white"
+                className="text-2xl font-bold mb-2"
+                style={{ color: 'var(--color-text)' }}
               >
                 ¡Mensaje enviado!
               </h3>
@@ -78,10 +94,17 @@ const Contact: FC = () => {
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-3 rounded-lg">
+                  {error}
+                </div>
+              )}
+
               <div>
                 <label
                   htmlFor="name"
-                  className="block mb-2 font-medium text-white"
+                  className="block mb-2 font-medium"
+                  style={{ color: 'var(--color-text)' }}
                 >
                   Nombre
                 </label>
@@ -93,14 +116,16 @@ const Contact: FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Tu nombre"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  style={{ color: 'var(--color-text)' }}
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="email"
-                  className="block mb-2 font-medium text-white"
+                  className="block mb-2 font-medium"
+                  style={{ color: 'var(--color-text)' }}
                 >
                   Correo electrónico
                 </label>
@@ -112,14 +137,16 @@ const Contact: FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="tu@email.com"
-                  className="w-full px-4 py-3 rounded-lg border text-white border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  style={{ color: 'var(--color-text)' }}
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="message"
-                  className="block mb-2 font-medium text-white"
+                  className="block mb-2 font-medium"
+                  style={{ color: 'var(--color-text)' }}
                 >
                   Mensaje
                 </label>
@@ -131,7 +158,8 @@ const Contact: FC = () => {
                   value={formData.message}
                   onChange={handleChange}
                   placeholder="Cuéntame sobre tu proyecto..."
-                  className="w-full px-4 py-3 rounded-lg border text-white border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  style={{ color: 'var(--color-text)' }}
                 ></textarea>
               </div>
 

@@ -1,4 +1,3 @@
-// app/page.tsx
 import { FC } from 'react';
 import Hero from '../components/Hero';
 import Gallery from '../components/Gallery';
